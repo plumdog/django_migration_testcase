@@ -37,18 +37,18 @@ class MyMigrationTest(MigrationTest):
         # the database is at self.before, and the models have fields
         # set accordingly.
 
-	MyModel = self.get_model_before('MyModel')
-	
+        MyModel = self.get_model_before('MyModel')
+
         # ... save some models
 
-	# Trigger the migration
-	self.run_migration()
+        # Trigger the migration
+        self.run_migration()
 
-	# Now run some assertions based on what the data should now
+        # Now run some assertions based on what the data should now
         # look like. The database will now be at self.after. To run
         # queries via the models, reload the model.
 
-	MyModel = self.get_model_after('MyModel')
+        MyModel = self.get_model_after('MyModel')
 ```
 
 
