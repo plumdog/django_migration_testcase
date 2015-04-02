@@ -1,3 +1,4 @@
+import django
 from django.test import TestCase, SimpleTestCase
 from django.core.management import call_command
 from django.apps import apps
@@ -21,7 +22,8 @@ class MigrationTest(TestCase):
     def _get_apps_for_migration(self, app_label, migration_name):
         loader = MigrationLoader(connection)
         state = loader.project_state((app_label, migration_name))
-        state.render()
+        if django.VERSION < (1, 8):
+            state.render()
         return state.apps
 
     def get_model_before(self, model_name):
