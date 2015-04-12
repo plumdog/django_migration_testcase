@@ -41,3 +41,41 @@ class ExampleMigrationTest(MigrationTest):
 
         mymodel = MyModel.objects.get()
         self.assertEqual(mymodel.number, 10)
+
+
+class AddDoubleNumberTest(MigrationTest):
+    before = '0002_mymodel_number'
+    after = '0003_mymodel_double_number'
+    app_name = 'test_app'
+
+    def test_migration(self):
+        MyModel = self.get_model_before('MyModel')
+        self.assertNotIn('double_number', MyModel._meta.get_all_field_names())
+
+        self.run_migration()
+
+        MyModel = self.get_model_after('MyModel')
+        self.assertIn('double_number', MyModel._meta.get_all_field_names())
+
+
+class PopulateDoubleNumberTest(MigrationTest):
+    before = '0003_mymodel_double_number'
+    after = '0004_populate_mymodel_double_number'
+    app_name = 'test_app'
+
+    def test_migration(self):
+        MyModel = self.get_model_before('MyModel')
+
+        MyModel = self.get_model_before('MyModel')
+
+        for i in range(10):
+            mymodel = MyModel()
+            mymodel.name = 'example name {}'.format(i)
+            mymodel.number = i
+            mymodel.save()
+
+        self.run_migration()
+
+        MyModel = self.get_model_after('MyModel')
+        for mymodel in MyModel.objects.all():
+            self.assertEqual(mymodel.number * 2, mymodel.double_number)
