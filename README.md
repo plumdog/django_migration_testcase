@@ -1,5 +1,5 @@
 # django_migration_test
-For testing migrations in Django >= 1.7
+For testing migrations in Django >= 1.6
 
 Because migrations are important. And if they go wrong, people get
 angry. How better to be sure that they won't go wrong than to run
@@ -7,7 +7,9 @@ tests.
 
 I found [this article](https://micknelson.wordpress.com/2013/03/01/testing-django-migrations/)
 on writing tests around South migrations, which I had used, but as of
-Django 1.7, I was out of luck. So I wrote this.
+Django 1.7, I was out of luck. So I wrote this. It also supports
+Django 1.6. It should also support 1.4 and 1.5 (because it supports
+South) but 1.4 and 1.5 are still in progress.
 
 This project is very much in its infancy, and I'd be really interested
 to know how others get on. Also, if there's a better strategy or
