@@ -2,7 +2,8 @@
 
 SUCCESS=0
 
-# A hack so that we only run the south tests for 
+# A hack so that we run the south tests for django 1.6 and below, but
+# the django migration tests for 1.7 and above
 TOXVENV=$(basename "$VIRTUAL_ENV")
 if [[ $TOXVENV =~ "django16" || $TOXVENV =~ "django15" || $TOXVENV =~ "django14" ]]; then
     NAME='test_project_*_south'
@@ -11,8 +12,6 @@ else
     NAME='test_project_*_django'
     APPNAME='test_app'
 fi
-
-# echo $TOXVENV "|" $NAME "|" $APPNAME
 
 
 for f in $(find tests -type d -name "$NAME"); do
