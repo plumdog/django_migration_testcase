@@ -1,5 +1,5 @@
 import django
-from django.test import TestCase, SimpleTestCase
+from django.test import TestCase, SimpleTestCase, TransactionTestCase
 from django.core.management import call_command
 from django.apps import apps
 from django.db import connection
@@ -7,7 +7,7 @@ from django.db.migrations.loader import MigrationLoader
 from django.db.migrations.state import ProjectState
 
 
-class MigrationTest(TestCase):
+class MigrationTest(TransactionTestCase):
 
     __abstract__ = True
 

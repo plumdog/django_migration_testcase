@@ -7,4 +7,4 @@ setup(
     author='Andrew Plummer',
     author_email='plummer574@gmail.com',
     url='https://github.com/plumdog/django_migration_test',
-    install_requires=['Django>=1.6'])
+    install_requires=['Django>=1.4'])

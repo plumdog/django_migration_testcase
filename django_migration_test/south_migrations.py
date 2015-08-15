@@ -1,10 +1,10 @@
-from django.test import TestCase
+from django.test import TransactionTestCase
 from django.core.management import call_command
 
 from south.migration import Migrations
 
 
-class MigrationTest(TestCase):
+class MigrationTest(TransactionTestCase):
     """Test for migrations, reworked from:
     https://micknelson.wordpress.com/2013/03/01/testing-django-migrations/
 
