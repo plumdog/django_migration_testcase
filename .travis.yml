@@ -2,3 +2,5 @@ language: python
 install: pip install tox
 sudo: false
 script: tox
+before_script:
+  - psql -c 'create database migration_test;' -U postgres
