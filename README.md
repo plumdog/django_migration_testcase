@@ -1,4 +1,4 @@
-# django_migration_test
+# django_migration_testcase
 For testing migrations in Django >= 1.4 (both South and Django migrations)
 
 Because migrations are important. And if they go wrong, people get
@@ -19,7 +19,7 @@ Quickstart
 
 ```python
 
-from django_migration_test import MigrationTest
+from django_migration_testcase import MigrationTest
 
 
 class MyMigrationTest(MigrationTest):

@@ -1,4 +1,4 @@
-from django_migration_test import MigrationTest
+from django_migration_testcase import MigrationTest
 
 
 class ExampleMigrationTest(MigrationTest):

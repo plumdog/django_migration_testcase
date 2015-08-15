@@ -3,5 +3,5 @@ install: pip install tox flake8
 sudo: false
 script: tox
 before_script:
-  - flake8 django_migration_test
+  - flake8 django_migration_testcase
   - psql -c 'create database migration_test;' -U postgres
