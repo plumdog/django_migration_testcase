@@ -1,26 +1,21 @@
 # -*- coding: utf-8 -*-
 from south.utils import datetime_utils as datetime
 from south.db import db
-from south.v2 import SchemaMigration
+from south.v2 import DataMigration
 from django.db import models
+from django.db.models import F
 
-
-class Migration(SchemaMigration):
+class Migration(DataMigration):
 
     def forwards(self, orm):
-        # Adding field 'MyModel.double_number'
-        db.add_column(u'test_app_south_mymodel', 'double_number',
-                      self.gf('django.db.models.fields.IntegerField')(null=True),
-                      keep_default=False)
-
+        MyModel = orm.MyModel
+        MyModel.objects.update(double_number=models.F('number')*2)
 
     def backwards(self, orm):
-        # Deleting field 'MyModel.double_number'
-        db.delete_column(u'test_app_south_mymodel', 'double_number')
-
+        "Write your backwards methods here."
 
     models = {
-        u'test_app_south.mymodel': {
+        u'test_app.mymodel': {
             'Meta': {'object_name': 'MyModel'},
             'double_number': ('django.db.models.fields.IntegerField', [], {'null': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -29,4 +24,5 @@ class Migration(SchemaMigration):
         }
     }
 
-    complete_apps = ['test_app_south']
+    complete_apps = ['test_app']
+    symmetrical = True
