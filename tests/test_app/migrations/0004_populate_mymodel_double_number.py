@@ -6,7 +6,7 @@ from django.db import models, migrations
 
 def forwards(apps, schema_editor):
     MyModel = apps.get_model("test_app", "MyModel")
-    MyModel.objects.update(double_number=models.F('number')*2)
+    MyModel.objects.update(double_number=models.F('number') * 2)
 
 
 def backwards(apps, schema_editor):

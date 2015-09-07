@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
-from django.db import models
 
 
 class Migration(SchemaMigration):
@@ -13,11 +11,9 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.IntegerField')(null=True),
                       keep_default=False)
 
-
     def backwards(self, orm):
         # Deleting field 'MyModel.number'
         db.delete_column(u'test_app_mymodel', 'number')
-
 
     models = {
         u'test_app.mymodel': {

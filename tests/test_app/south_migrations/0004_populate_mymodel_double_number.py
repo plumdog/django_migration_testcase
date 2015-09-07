@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
-from south.utils import datetime_utils as datetime
-from south.db import db
 from south.v2 import DataMigration
 from django.db import models
-from django.db.models import F
+
 
 class Migration(DataMigration):
 
     def forwards(self, orm):
         MyModel = orm.MyModel
-        MyModel.objects.update(double_number=models.F('number')*2)
+        MyModel.objects.update(double_number=models.F('number') * 2)
 
     def backwards(self, orm):
         "Write your backwards methods here."
