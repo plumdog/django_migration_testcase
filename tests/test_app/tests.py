@@ -58,6 +58,21 @@ class AddDoubleNumberTest(MigrationTest):
         self.assertIn('double_number', MyModel._meta.get_all_field_names())
 
 
+class MigrationsByNumberOnlyTest(MigrationTest):
+    before = '0002'
+    after = '0003'
+    app_name = 'test_app'
+
+    def test_migration(self):
+        MyModel = self.get_model_before('MyModel')
+        self.assertNotIn('double_number', MyModel._meta.get_all_field_names())
+
+        self.run_migration()
+
+        MyModel = self.get_model_after('MyModel')
+        self.assertIn('double_number', MyModel._meta.get_all_field_names())
+
+
 class PopulateDoubleNumberTest(MigrationTest):
     before = '0003_mymodel_double_number'
     after = '0004_populate_mymodel_double_number'

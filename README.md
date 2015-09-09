@@ -31,8 +31,7 @@ class MyMigrationTest(MigrationTest):
 
     # At present, we can only run migrations for one app at a time.
     app_name = 'my_app'
-    # At present, these need to be full names of migrations, not just
-    # prefixes.
+    # Or just the numbers, if you prefer brevity.
     before = '0001_initial'
     after = '0002_change_fields'
 
