@@ -79,3 +79,18 @@ class PopulateDoubleNumberTest(MigrationTest):
         MyModel = self.get_model_after('MyModel')
         for mymodel in MyModel.objects.all():
             self.assertEqual(mymodel.number * 2, mymodel.double_number)
+
+
+class GetModelMigrationTest(MigrationTest):
+    before = '0001_initial'
+    after = '0002_mymodel_number'
+    app_name = 'test_app'
+
+    def test_migration(self):
+        MyModel = self.get_model_before('test_app.MyModel')
+        self.assertEqual(MyModel.__name__, 'MyModel')
+
+        self.run_migration()
+
+        MyModel = self.get_model_before('test_app.MyModel')
+        self.assertEqual(MyModel.__name__, 'MyModel')
