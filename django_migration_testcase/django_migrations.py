@@ -21,6 +21,8 @@ class MigrationTest(TransactionTestCase):
 
     def _get_apps_for_migration(self, app_label, migration_name):
         loader = MigrationLoader(connection)
+        # Resolve shorthand for a migration into the full name.
+        migration_name = loader.get_migration_by_prefix(app_label, migration_name).name
         state = loader.project_state((app_label, migration_name))
         if django.VERSION < (1, 8):
             state.render()
