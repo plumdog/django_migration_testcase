@@ -107,3 +107,59 @@ class GetModelMigrationTest(MigrationTest):
 
         MyModel = self.get_model_after('test_app.MyModel')
         self.assertEqual(MyModel.__name__, 'MyModel')
+
+
+class ForeignKeyTest(MigrationTest):
+    before = '0004_populate_mymodel_double_number'
+    after = '0005_foreignmodel'
+    app_name = 'test_app'
+
+    def test_migration(self):
+        MyModel = self.get_model_before('test_app.MyModel')
+        self.assertEqual(MyModel.__name__, 'MyModel')
+
+        self.run_migration()
+
+        ForeignModel = self.get_model_after('test_app.ForeignModel')
+        self.assertEqual(ForeignModel.__name__, 'ForeignModel')
+
+        MyModel = self.get_model_after('test_app.MyModel')
+        self.assertEqual(MyModel.__name__, 'MyModel')
+
+        my = MyModel(name='test_my', number=1, double_number=3.14)
+        my.save()
+
+        foreign = ForeignModel(name='test_foreign', my=my)
+
+    def test_migration2(self):
+        """Same test as test_migration, but this one passes."""
+        MyModel = self.get_model_before('test_app.MyModel')
+        self.assertEqual(MyModel.__name__, 'MyModel')
+
+        self.run_migration()
+
+        ForeignModel = self.get_model_after('test_app.ForeignModel')
+        self.assertEqual(ForeignModel.__name__, 'ForeignModel')
+
+        # get_model_before/get_model_after seems to not get the same model as
+        # this crazy thing.
+        MyModel = ForeignModel.my.field.rel.to
+        self.assertEqual(MyModel.__name__, 'MyModel')
+
+        my = MyModel(name='test_my', number=1, double_number=3.14)
+        my.save()
+
+        foreign = ForeignModel(name='test_foreign', my=my)
+
+    def test_migration_clearly(self):
+        """A clear illustration of the problem."""
+        self.run_migration()
+
+        ForeignModel = self.get_model_after('test_app.ForeignModel')
+
+        # get_model_before/get_model_after seems to not get the same model as
+        # this crazy thing.
+        MyModel = ForeignModel.my.field.rel.to
+        MyModel2 = self.get_model_after('test_app.MyModel')
+
+        self.assertEqual(MyModel, MyModel2)
