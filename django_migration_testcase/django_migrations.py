@@ -9,18 +9,29 @@ class MigrationTest(TransactionTestCase):
 
     __abstract__ = True
 
+    before = None
+    after = None
+    app_name = None
+
     def setUp(self):
-        self.apps_before = None
-        self.apps_after = None
+        self.apps_before = {}
+        self.apps_after = {}
 
         super(MigrationTest, self).setUp()
-        call_command('migrate', self.app_name, self.before,
-                     no_initial_data=True, verbosity=0)
+
+        if self.app_name:
+            self.before = [(self.app_name, self.before)]
+            self.after = [(self.app_name, self.after)]
+
+        for app_name, version in self.before:
+            call_command('migrate', app_name, version,
+                         no_initial_data=True, verbosity=0)
 
     def tearDown(self):
         super(MigrationTest, self).tearDown()
-        call_command('migrate', self.app_name,
-                     no_initial_data=True, verbosity=0)
+        for app_name, _ in self.after:
+            call_command('migrate', app_name,
+                         no_initial_data=True, verbosity=0)
 
     def _get_apps_for_migration(self, app_label, migration_name):
         loader = MigrationLoader(connection)
@@ -39,16 +50,19 @@ class MigrationTest(TransactionTestCase):
 
     def get_model_before(self, model_name):
         app_name, model_name = self._get_app_and_model_name(model_name)
-        if not self.apps_before:
-            self.apps_before = self._get_apps_for_migration(app_name, self.before)
-        return self.apps_before.get_model(app_name, model_name)
+        version = dict(self.before)[app_name]
+        if app_name not in self.apps_before:
+            self.apps_before[app_name] = self._get_apps_for_migration(app_name, version)
+        return self.apps_before[app_name].get_model(app_name, model_name)
 
     def get_model_after(self, model_name):
         app_name, model_name = self._get_app_and_model_name(model_name)
-        if not self.apps_after:
-            self.apps_after = self._get_apps_for_migration(app_name, self.after)
-        return self.apps_after.get_model(app_name, model_name)
+        version = dict(self.after)[app_name]
+        if app_name not in self.apps_after:
+            self.apps_after[app_name] = self._get_apps_for_migration(app_name, version)
+        return self.apps_after[app_name].get_model(app_name, model_name)
 
     def run_migration(self):
-        call_command('migrate', self.app_name, self.after,
-                     no_initial_data=True, verbosity=0)
+        for app_name, version in self.after:
+            call_command('migrate', app_name, version,
+                         no_initial_data=True, verbosity=0)
