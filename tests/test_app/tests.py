@@ -17,7 +17,7 @@ class ExampleMigrationTest(MigrationTest):
 
         self.run_migration()
 
-        MyModel = self.get_model_before('MyModel')
+        MyModel = self.get_model_after('MyModel')
         self.assertEqual(MyModel.objects.count(), 10)
 
     def test_invalid_field(self):
@@ -81,8 +81,6 @@ class PopulateDoubleNumberTest(MigrationTest):
     def test_migration(self):
         MyModel = self.get_model_before('MyModel')
 
-        MyModel = self.get_model_before('MyModel')
-
         for i in range(10):
             mymodel = MyModel()
             mymodel.name = 'example name {}'.format(i)
@@ -107,5 +105,5 @@ class GetModelMigrationTest(MigrationTest):
 
         self.run_migration()
 
-        MyModel = self.get_model_before('test_app.MyModel')
+        MyModel = self.get_model_after('test_app.MyModel')
         self.assertEqual(MyModel.__name__, 'MyModel')
