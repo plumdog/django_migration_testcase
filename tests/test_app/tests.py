@@ -129,7 +129,7 @@ class ForeignKeyTest(MigrationTest):
         my = MyModel(name='test_my', number=1, double_number=3.14)
         my.save()
 
-        foreign = ForeignModel(name='test_foreign', my=my)
+        ForeignModel(name='test_foreign', my=my)
 
     def test_migration2(self):
         """Same test as test_migration, but this one passes."""
@@ -149,7 +149,7 @@ class ForeignKeyTest(MigrationTest):
         my = MyModel(name='test_my', number=1, double_number=3.14)
         my.save()
 
-        foreign = ForeignModel(name='test_foreign', my=my)
+        ForeignModel(name='test_foreign', my=my)
 
     def test_migration_clearly(self):
         """A clear illustration of the problem."""

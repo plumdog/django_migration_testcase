@@ -10,6 +10,9 @@ class MigrationTest(TransactionTestCase):
     __abstract__ = True
 
     def setUp(self):
+        self.apps_before = None
+        self.apps_after = None
+
         super(MigrationTest, self).setUp()
         call_command('migrate', self.app_name, self.before,
                      no_initial_data=True, verbosity=0)
@@ -36,13 +39,15 @@ class MigrationTest(TransactionTestCase):
 
     def get_model_before(self, model_name):
         app_name, model_name = self._get_app_and_model_name(model_name)
-        return (self._get_apps_for_migration(app_name, self.before)
-                .get_model(app_name, model_name))
+        if not self.apps_before:
+            self.apps_before = self._get_apps_for_migration(app_name, self.before)
+        return self.apps_before.get_model(app_name, model_name)
 
     def get_model_after(self, model_name):
         app_name, model_name = self._get_app_and_model_name(model_name)
-        return (self._get_apps_for_migration(app_name, self.after)
-                .get_model(app_name, model_name))
+        if not self.apps_after:
+            self.apps_after = self._get_apps_for_migration(app_name, self.after)
+        return self.apps_after.get_model(app_name, model_name)
 
     def run_migration(self):
         call_command('migrate', self.app_name, self.after,
