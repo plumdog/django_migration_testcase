@@ -58,6 +58,29 @@ class MyMigrationTest(MigrationTest):
 ```
 
 
+Migrating Multiple Apps
+-----------------------
+
+If you want to test that two apps in different apps play nicely
+together, you can set `self.before` and `self.after` as a list of
+two-tuples, each of which should be `([[app-name]],
+[[migration]])`. (This is done this way rather than as a dict because
+order may matter - migrations are run in the order they are listed.)
+
+Eg
+```python
+class MigrateBothMigrationTest(MigrationTest):
+    # Don't set app_name on the class, because there isn't one.
+    before = [('test_app', '0001'), ('test_second_app', '0001')]
+    after = [('test_app', '0002'), ('test_second_app', '0002')]
+```
+
+Then, in your `test_*` methods, when you need to get a model, you must
+specify the app name (if you're only testing one app, then it can look
+at `self.app_name`). So you can't do
+`self.get_model_before('MyModel')`, you have to do
+`self.get_model_before('test_app.MyModel')`.
+
 How it works
 ------------
 

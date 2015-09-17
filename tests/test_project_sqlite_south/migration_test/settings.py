@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'south',
 
     'test_app',
+    'test_second_app',
 )
 
 MIDDLEWARE_CLASSES = (

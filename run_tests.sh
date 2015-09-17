@@ -15,7 +15,7 @@ fi
 
 for f in $(find tests -type d -name "$NAME"); do
     echo "Tests for $f"
-    if ! (cd "$f" && ./manage.py test test_app) ; then
+    if ! (cd "$f" && ./manage.py test test_app test_second_app) ; then
 	SUCCESS=1;
     fi
 done
