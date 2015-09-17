@@ -2,6 +2,10 @@ from django.test import TransactionTestCase
 from django.core.management import call_command
 
 
+class InvalidModelStateError(Exception):
+    pass
+
+
 class BaseMigrationTestCase(TransactionTestCase):
     __abstract__ = True
 
@@ -26,6 +30,17 @@ class BaseMigrationTestCase(TransactionTestCase):
             call_command('migrate', app_name,
                          verbosity=0, no_initial_data=True)
         super(BaseMigrationTestCase, self).tearDown()
+
+    def setUp(self):
+        self._migration_run = False
+
+    def _check_migration_run(self):
+        if not self._migration_run:
+            raise InvalidModelStateError('Migration(s) not yet run, invalid state requested')
+
+    def _check_migration_not_run(self):
+        if self._migration_run:
+            raise InvalidModelStateError('Migration(s) already run, invalid state requested')
 
     def get_model_before(self, model_name):
         raise NotImplementedError()
