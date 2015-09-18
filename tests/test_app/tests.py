@@ -1,4 +1,5 @@
 from django_migration_testcase import MigrationTest
+from django_migration_testcase.base import InvalidModelStateError
 
 
 class ExampleMigrationTest(MigrationTest):
@@ -163,3 +164,18 @@ class ForeignKeyTest(MigrationTest):
         MyModel2 = self.get_model_after('test_app.MyModel')
 
         self.assertEqual(MyModel, MyModel2)
+
+
+class UtilsMigrationTest(MigrationTest):
+    before = '0001_initial'
+    after = '0002_mymodel_number'
+    app_name = 'test_app'
+
+    def test_migration_not_run_exception(self):
+        with self.assertRaises(InvalidModelStateError):
+            self.get_model_after('MyModel')
+
+    def test_migration_already_run_exception(self):
+        self.run_migration()
+        with self.assertRaises(InvalidModelStateError):
+            self.get_model_before('MyModel')

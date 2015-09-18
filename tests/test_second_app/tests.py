@@ -17,7 +17,7 @@ class SecondAppMigrationTest(MigrationTest):
 
         self.run_migration()
 
-        MyModel = self.get_model_before('MyModel')
+        MyModel = self.get_model_after('MyModel')
         self.assertEqual(MyModel.objects.count(), 10)
 
 

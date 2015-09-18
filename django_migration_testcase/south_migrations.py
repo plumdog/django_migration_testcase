@@ -52,15 +52,18 @@ class MigrationTest(BaseMigrationTestCase):
         return orm[model_name]
 
     def get_model_before(self, model_name):
+        self._check_migration_not_run()
         return self._get_model(model_name, self.before_orm)
 
     def get_model_after(self, model_name):
+        self._check_migration_run()
         return self._get_model(model_name, self.after_orm)
 
     def run_migration(self):
         for app_name, version in self.after_migrations:
             call_command('migrate', app_name, version,
                          verbosity=0, no_initial_data=True)
+        self._migration_run = True
 
     def _get_migration_number(self, migration_name):
         # TODO: make this better and report exception

@@ -37,9 +37,12 @@ class MigrationTest(BaseMigrationTestCase):
         for app_name, version in self.after:
             call_command('migrate', app_name, version,
                          verbosity=0, no_initial_data=True)
+        self._migration_run = True
 
     def get_model_before(self, model_name):
+        self._check_migration_not_run()
         return self._get_model(model_name, self.before, self.apps_before)
 
     def get_model_after(self, model_name):
+        self._check_migration_run()
         return self._get_model(model_name, self.after, self.apps_after)
