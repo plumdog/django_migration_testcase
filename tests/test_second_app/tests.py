@@ -1,3 +1,5 @@
+import unittest
+import django
 from django_migration_testcase import MigrationTest
 
 
@@ -69,3 +71,31 @@ class MigrateBothMigrationTest(MigrationTest):
 
         mymodel = test_second_app_MyModel.objects.get()
         self.assertEqual(mymodel.number, 10)
+
+
+# TODO: conclude if this is permanent, or if there is a workaround.
+@unittest.skipIf(django.VERSION < (1, 7), 'Not supported by South')
+class SecondAppFKToTestAppMigrationTest(MigrationTest):
+    """We don't actually migrate anything here, before and after are the
+    same. We just check that the model we load can be linked and
+    saved, even if they come from different apps.
+
+    """
+
+    before = [
+        ('test_second_app', '0003'),
+        ('test_app', '0005')]
+    after = [
+        ('test_second_app', '0003'),
+        ('test_app', '0005')]
+
+    def test_save_and_reload_model(self):
+        MyModelSecond = self.get_model_before('test_second_app.MyModel')
+        MyModelFirst = self.get_model_before('test_app.MyModel')
+
+        mymodelfirst = MyModelFirst()
+        mymodelfirst.save()
+
+        mymodelsecond = MyModelSecond()
+        mymodelsecond.my_model = mymodelfirst
+        mymodelsecond.save()

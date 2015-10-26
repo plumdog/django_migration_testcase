@@ -81,6 +81,16 @@ at `self.app_name`). So you can't do
 `self.get_model_before('MyModel')`, you have to do
 `self.get_model_before('test_app.MyModel')`.
 
+Relationships between models in different apps
+----------------------------------------------
+
+This works in with Django's migrations. But (at present) doesn't with
+South. There's an additional problem with South, as the metadata for a
+migration doesn't contain the state of all models, just those that
+were frozen. So how does your test work out what a model should look
+like for a migration, if the migration itself doesn't know? Answers in
+a PR please, or just any suggestions.
+
 How it works
 ------------
 
