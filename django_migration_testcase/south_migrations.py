@@ -1,5 +1,3 @@
-from django.core.management import call_command
-
 from south.migration import Migrations
 
 from .base import BaseMigrationTestCase
@@ -36,10 +34,8 @@ class MigrationTest(BaseMigrationTestCase):
 
         for app_name, version in self.before_migrations:
             # Do a fake migration first to update the migration history.
-            call_command('migrate', app_name,
-                         fake=True, verbosity=0, no_initial_data=True)
-            call_command('migrate', app_name, version,
-                         verbosity=0, no_initial_data=True)
+            self.migrate(app_name, version=None, fake=True)
+            self.migrate(app_name, version=version)
 
     def _get_model(self, model_name, orm_dict):
         app_name, model_name = self._get_app_and_model_name(model_name)
@@ -61,8 +57,7 @@ class MigrationTest(BaseMigrationTestCase):
 
     def run_migration(self):
         for app_name, version in self.after_migrations:
-            call_command('migrate', app_name, version,
-                         verbosity=0, no_initial_data=True)
+            self.migrate(app_name, version)
         self._migration_run = True
 
     def _get_migration_number(self, migration_name):

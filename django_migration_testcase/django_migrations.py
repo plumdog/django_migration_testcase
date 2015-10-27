@@ -1,5 +1,4 @@
 import django
-from django.core.management import call_command
 from django.db import connection
 from django.db.migrations.loader import MigrationLoader
 
@@ -14,8 +13,7 @@ class MigrationTest(BaseMigrationTestCase):
 
         super(MigrationTest, self).setUp()
         for app_name, version in self.before:
-            call_command('migrate', app_name, version,
-                         no_initial_data=True, verbosity=0)
+            self.migrate(app_name, version)
 
     def _get_apps_for_migration(self, migration_states):
         loader = MigrationLoader(connection)
@@ -41,8 +39,7 @@ class MigrationTest(BaseMigrationTestCase):
 
     def run_migration(self):
         for app_name, version in self.after:
-            call_command('migrate', app_name, version,
-                         verbosity=0, no_initial_data=True)
+            self.migrate(app_name, version)
         self._migration_run = True
 
     def get_model_before(self, model_name):

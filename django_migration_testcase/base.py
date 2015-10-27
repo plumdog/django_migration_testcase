@@ -27,8 +27,7 @@ class BaseMigrationTestCase(TransactionTestCase):
         # state so that we don't get errors when the final truncating
         # happens.
         for app_name, _ in self.after:
-            call_command('migrate', app_name,
-                         verbosity=0, no_initial_data=True)
+            self.migrate(app_name, version=None)
         super(BaseMigrationTestCase, self).tearDown()
 
     def setUp(self):
@@ -50,6 +49,20 @@ class BaseMigrationTestCase(TransactionTestCase):
 
     def run_migration(self):
         raise NotImplementedError()
+
+    def migrate_kwargs(self):
+        return {'verbosity': 0,
+                'no_initial_data': True}
+
+    def migrate(self, app_name, version, fake=False):
+        kwargs = self.migrate_kwargs()
+        kwargs['fake'] = fake
+        # For Django 1.7 - does a len() check on args.
+        if version:
+            args = ('migrate', app_name, version)
+        else:
+            args = ('migrate', app_name)
+        call_command(*args, **kwargs)
 
     def _get_app_and_model_name(self, model_name):
         if '.' in model_name:
