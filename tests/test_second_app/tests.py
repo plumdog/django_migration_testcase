@@ -82,12 +82,9 @@ class SecondAppFKToTestAppMigrationTest(MigrationTest):
 
     """
 
-    before = [
-        ('test_second_app', '0003'),
-        ('test_app', '0005')]
-    after = [
-        ('test_second_app', '0003'),
-        ('test_app', '0005')]
+    app_name = 'test_second_app'
+    before = '0003'
+    after = '0003'
 
     def test_save_and_reload_model(self):
         MyModelSecond = self.get_model_before('test_second_app.MyModel')
