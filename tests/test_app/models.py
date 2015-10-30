@@ -10,3 +10,13 @@ class MyModel(models.Model):
 class ForeignModel(models.Model):
     name = models.CharField(max_length=100)
     my = models.ForeignKey(MyModel)
+
+
+class NullableForeignModel(models.Model):
+    name = models.CharField(max_length=100)
+    my = models.ForeignKey(MyModel, null=True, blank=True)
+
+
+class NonNullableForeignModel(models.Model):
+    name = models.CharField(max_length=100)
+    my = models.ForeignKey(MyModel)

@@ -1,3 +1,5 @@
+from django.db import IntegrityError
+
 from django_migration_testcase import MigrationTest
 from django_migration_testcase.base import InvalidModelStateError
 
@@ -179,3 +181,145 @@ class UtilsMigrationTest(MigrationTest):
         self.run_migration()
         with self.assertRaises(InvalidModelStateError):
             self.get_model_before('MyModel')
+
+
+class NullableFkTest(MigrationTest):
+    before = '0006'
+    after = '0007'
+    app_name = 'test_app'
+
+    def test_becomes_nullable(self):
+        NullableForeignModel = self.get_model_before('NullableForeignModel')
+        MyModel = self.get_model_before('MyModel')
+
+        my_model = MyModel.objects.create(
+            name='testname',
+            number=1,
+            double_number=2)
+        nullable_foreign_model = NullableForeignModel.objects.create(
+            name='foreign_name',
+            my=my_model)
+
+        with self.assertRaises(ValueError):
+            nullable_foreign_model.my = None
+
+        self.run_migration()
+
+        NullableForeignModel = self.get_model_after('NullableForeignModel')
+        nullable_foreign_model = NullableForeignModel.objects.get()
+
+        nullable_foreign_model.my = None
+        nullable_foreign_model.save()
+        self.assertIsNone(nullable_foreign_model.my)
+
+
+class ReverseNullableFkTest(MigrationTest):
+    before = '0007'
+    after = '0006'
+    app_name = 'test_app'
+
+    def test_becomes_non_nullable(self):
+        NullableForeignModel = self.get_model_before('NullableForeignModel')
+
+        nullable_foreign_model = NullableForeignModel.objects.create(
+            name='foreign_name',
+            my=None)
+        self.assertIsNone(nullable_foreign_model.my)
+
+        MyModel = self.get_model_before('MyModel')
+        my_model = MyModel.objects.create(
+            name='testname',
+            number=1,
+            double_number=2)
+        nullable_foreign_model.my = my_model
+        nullable_foreign_model.save()
+
+        self.run_migration()
+
+        NullableForeignModel = self.get_model_after('NullableForeignModel')
+        nullable_foreign_model = NullableForeignModel.objects.get()
+
+        with self.assertRaises(ValueError):
+            nullable_foreign_model.my = None
+
+    def test_becomes_non_nullable_migration_error(self):
+        NullableForeignModel = self.get_model_before('NullableForeignModel')
+
+        nullable_foreign_model = NullableForeignModel.objects.create(
+            name='foreign_name',
+            my=None)
+        self.assertIsNone(nullable_foreign_model.my)
+
+        with self.assertRaises(IntegrityError):
+            self.run_migration()
+
+
+class NonNullableFkTest(MigrationTest):
+    before = '0008'
+    after = '0009'
+    app_name = 'test_app'
+
+    def test_becomes_non_nullable(self):
+        NonNullableForeignModel = self.get_model_before('NonNullableForeignModel')
+
+        non_nullable_foreign_model = NonNullableForeignModel.objects.create(
+            name='foreign_name',
+            my=None)
+        self.assertIsNone(non_nullable_foreign_model.my)
+
+        MyModel = self.get_model_before('MyModel')
+        my_model = MyModel.objects.create(
+            name='testname',
+            number=1,
+            double_number=2)
+        non_nullable_foreign_model.my = my_model
+        non_nullable_foreign_model.save()
+
+        self.run_migration()
+
+        NonNullableForeignModel = self.get_model_after('NonNullableForeignModel')
+        non_nullable_foreign_model = NonNullableForeignModel.objects.get()
+
+        with self.assertRaises(ValueError):
+            non_nullable_foreign_model.my = None
+
+    def test_becomes_non_nullable_migration_error(self):
+        NonNullableForeignModel = self.get_model_before('NonNullableForeignModel')
+
+        non_nullable_foreign_model = NonNullableForeignModel.objects.create(
+            name='foreign_name',
+            my=None)
+        self.assertIsNone(non_nullable_foreign_model.my)
+
+        with self.assertRaises(IntegrityError):
+            self.run_migration()
+
+
+class ReverseNonNullableFkTest(MigrationTest):
+    before = '0009'
+    after = '0008'
+    app_name = 'test_app'
+
+    def test_becomes_nullable(self):
+        NonNullableForeignModel = self.get_model_before('NonNullableForeignModel')
+        MyModel = self.get_model_before('MyModel')
+
+        my_model = MyModel.objects.create(
+            name='testname',
+            number=1,
+            double_number=2)
+        non_nullable_foreign_model = NonNullableForeignModel.objects.create(
+            name='foreign_name',
+            my=my_model)
+
+        with self.assertRaises(ValueError):
+            non_nullable_foreign_model.my = None
+
+        self.run_migration()
+
+        NonNullableForeignModel = self.get_model_after('NonNullableForeignModel')
+        non_nullable_foreign_model = NonNullableForeignModel.objects.get()
+
+        non_nullable_foreign_model.my = None
+        non_nullable_foreign_model.save()
+        self.assertIsNone(non_nullable_foreign_model.my)
