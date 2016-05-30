@@ -19,8 +19,9 @@ class MigrationTest(BaseMigrationTestCase):
         loader = MigrationLoader(connection)
         full_names = []
         for app_name, migration_name in migration_states:
-            migration_name = loader.get_migration_by_prefix(app_name, migration_name).name
-            full_names.append((app_name, migration_name))
+            if migration_name != 'zero':
+                migration_name = loader.get_migration_by_prefix(app_name, migration_name).name
+                full_names.append((app_name, migration_name))
         state = loader.project_state(full_names)
         if django.VERSION < (1, 8):
             state.render()

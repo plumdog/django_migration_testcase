@@ -81,6 +81,16 @@ at `self.app_name`). So you can't do
 `self.get_model_before('MyModel')`, you have to do
 `self.get_model_before('test_app.MyModel')`.
 
+Migration Versions
+------------------
+
+By setting the migration version as `'zero'`, this sets the target
+migration as before the first migration.
+
+In cases where two migrations have the same number-prefix, you can
+specify the full version to resolve this. Or you can use the full
+version anyway in the name of explicitness.
+
 Relationships between models in different apps
 ----------------------------------------------
 

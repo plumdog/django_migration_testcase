@@ -96,3 +96,19 @@ class SecondAppFKToTestAppMigrationTest(MigrationTest):
         mymodelsecond = MyModelSecond()
         mymodelsecond.my_model = mymodelfirst
         mymodelsecond.save()
+
+
+class MigrateFromZero(MigrationTest):
+    before = [('test_app', '0002'), ('test_second_app', 'zero')]
+    after = [('test_app', '0002'), ('test_second_app', '0001')]
+
+    def test_model_exists(self):
+        # Should fail because we have migrated this app back to zero.
+        with self.assertRaises(LookupError):
+            self.get_model_before('test_second_app.MyModel')
+
+        self.run_migration()
+
+        # But after the migration, it should succeed.
+        MyModel = self.get_model_after('test_second_app.MyModel')
+        self.assertEqual(MyModel.__name__, 'MyModel')
