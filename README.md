@@ -1,5 +1,5 @@
 # django_migration_testcase
-[![Build Status](https://travis-ci.org/plumdog/django_migration_test.svg?branch=master)](https://travis-ci.org/plumdog/django_migration_test)
+[![Build Status](https://travis-ci.org/plumdog/django_migration_testcase.svg?branch=master)](https://travis-ci.org/plumdog/django_migration_testcase)
 
 For testing migrations in Django >= 1.4 (both South and Django migrations)
 
