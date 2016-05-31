@@ -179,3 +179,20 @@ class UtilsMigrationTest(MigrationTest):
         self.run_migration()
         with self.assertRaises(InvalidModelStateError):
             self.get_model_before('MyModel')
+
+
+class MigrateFromZero(MigrationTest):
+    before = 'zero'
+    after = '0001_initial'
+
+    app_name = 'test_app'
+
+    def test_model_exists(self):
+
+        with self.assertRaises(LookupError):
+            self.get_model_before('MyModel')
+
+        self.run_migration()
+
+        MyModel = self.get_model_after('MyModel')
+        self.assertEqual(MyModel.__name__, 'MyModel')

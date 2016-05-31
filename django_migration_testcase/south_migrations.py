@@ -15,22 +15,33 @@ class MigrationTest(BaseMigrationTestCase):
         self.before_migrations = []
         for app_name, version in self.before:
             migrations = Migrations(app_name)
-            self.before_migrations.append((app_name, migrations.guess_migration(
-                self._get_migration_number(version)).name()))
+            if version != 'zero':
+                full_version = migrations.guess_migration(
+                    self._get_migration_number(version)).name()
+            else:
+                full_version = 'zero'
+            self.before_migrations.append((app_name, full_version))
         self.after_migrations = []
         for app_name, version in self.after:
             migrations = Migrations(app_name)
-            self.after_migrations.append((app_name, migrations.guess_migration(
-                self._get_migration_number(version)).name()))
+
+            if version != 'zero':
+                full_version = migrations.guess_migration(
+                    self._get_migration_number(version)).name()
+            else:
+                full_version = 'zero'
+            self.after_migrations.append((app_name, full_version))
 
         self.before_orm = {}
         for app_name, version in self.before_migrations:
-            migrations = Migrations(app_name)
-            self.before_orm[app_name] = migrations[version].orm()
+            if version != 'zero':
+                migrations = Migrations(app_name)
+                self.before_orm[app_name] = migrations[version].orm()
         self.after_orm = {}
         for app_name, version in self.after_migrations:
-            migrations = Migrations(app_name)
-            self.after_orm[app_name] = migrations[version].orm()
+            if version != 'zero':
+                migrations = Migrations(app_name)
+                self.after_orm[app_name] = migrations[version].orm()
 
         for app_name, version in self.before_migrations:
             # Do a fake migration first to update the migration history.
