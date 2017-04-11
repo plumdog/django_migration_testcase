@@ -44,6 +44,13 @@ class ExampleMigrationTest(MigrationTest):
         self.assertEqual(mymodel.number, 10)
 
 
+def field_names(model_class):
+    try:
+        return model_class._meta.get_all_field_names()
+    except AttributeError:
+        return [f.name for f in model_class._meta.get_fields()]
+
+
 class AddDoubleNumberTest(MigrationTest):
     before = '0002_mymodel_number'
     after = '0003_mymodel_double_number'
@@ -51,12 +58,12 @@ class AddDoubleNumberTest(MigrationTest):
 
     def test_migration(self):
         MyModel = self.get_model_before('MyModel')
-        self.assertNotIn('double_number', MyModel._meta.get_all_field_names())
+        self.assertNotIn('double_number', field_names(MyModel))
 
         self.run_migration()
 
         MyModel = self.get_model_after('MyModel')
-        self.assertIn('double_number', MyModel._meta.get_all_field_names())
+        self.assertIn('double_number', field_names(MyModel))
 
 
 class MigrationsByNumberOnlyTest(MigrationTest):
@@ -66,12 +73,12 @@ class MigrationsByNumberOnlyTest(MigrationTest):
 
     def test_migration(self):
         MyModel = self.get_model_before('MyModel')
-        self.assertNotIn('double_number', MyModel._meta.get_all_field_names())
+        self.assertNotIn('double_number', field_names(MyModel))
 
         self.run_migration()
 
         MyModel = self.get_model_after('MyModel')
-        self.assertIn('double_number', MyModel._meta.get_all_field_names())
+        self.assertIn('double_number', field_names(MyModel))
 
 
 class PopulateDoubleNumberTest(MigrationTest):
