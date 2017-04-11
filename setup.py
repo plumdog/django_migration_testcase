@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='django-migration-testcase',
-    version='0.0.10',
+    version='0.0.11',
     author='Andrew Plummer',
     author_email='plummer574@gmail.com',
     description='For testing migrations in Django',
