@@ -21,6 +21,24 @@ class ExampleMigrationTest(MigrationTest):
         MyModel = self.get_model_after('MyModel')
         self.assertEqual(MyModel.objects.count(), 10)
 
+    def test_run_reverse_migration(self):
+        MyModel = self.get_model_before('MyModel')
+
+        for i in range(10):
+            mymodel = MyModel()
+            mymodel.name = 'example name {}'.format(i)
+            mymodel.save()
+        self.assertEqual(MyModel.objects.count(), 10)
+
+        self.run_migration()
+
+        MyModel = self.get_model_after('MyModel')
+        self.assertEqual(MyModel.objects.count(), 10)
+
+        self.run_reverse_migration()
+
+        self.assertEqual(MyModel.objects.count(), 10)
+
     def test_invalid_field(self):
         MyModel = self.get_model_before('MyModel')
         mymodel = MyModel()

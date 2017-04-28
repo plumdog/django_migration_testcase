@@ -50,6 +50,9 @@ class BaseMigrationTestCase(TransactionTestCase):
     def run_migration(self):
         raise NotImplementedError()
 
+    def run_reverse_migration(self):
+        raise NotImplementedError()
+
     def migrate_kwargs(self):
         return {'verbosity': 0,
                 'no_initial_data': True,

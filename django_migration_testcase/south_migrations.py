@@ -71,6 +71,11 @@ class MigrationTest(BaseMigrationTestCase):
             self.migrate(app_name, version)
         self._migration_run = True
 
+    def run_reverse_migration(self):
+        for app_name, version in self.before:
+            self.migrate(app_name, version)
+        self._migration_run = False
+
     def _get_migration_number(self, migration_name):
         # TODO: make this better and report exception
         return migration_name.split('_')[0]
