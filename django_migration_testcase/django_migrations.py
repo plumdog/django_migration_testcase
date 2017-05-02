@@ -43,6 +43,12 @@ class MigrationTest(BaseMigrationTestCase):
             self.migrate(app_name, version)
         self._migration_run = True
 
+    def run_reverse_migration(self):
+        self._check_migration_run()
+        for app_name, version in self.before:
+            self.migrate(app_name, version)
+        self._migration_run = False
+
     def get_model_before(self, model_name):
         self._check_migration_not_run()
         return self._get_model(model_name, before=True)
