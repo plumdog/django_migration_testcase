@@ -199,6 +199,8 @@ class UtilsMigrationTest(MigrationTest):
     def test_migration_not_run_exception(self):
         with self.assertRaises(InvalidModelStateError):
             self.get_model_after('MyModel')
+        with self.assertRaises(InvalidModelStateError):
+            self.run_reverse_migration()
 
     def test_migration_already_run_exception(self):
         self.run_migration()

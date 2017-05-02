@@ -44,6 +44,7 @@ class MigrationTest(BaseMigrationTestCase):
         self._migration_run = True
 
     def run_reverse_migration(self):
+        self._check_migration_run()
         for app_name, version in self.before:
             self.migrate(app_name, version)
         self._migration_run = False
