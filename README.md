@@ -29,14 +29,14 @@ from django_migration_testcase import MigrationTest
 
 class MyMigrationTest(MigrationTest):
 
-    # At present, we can only run migrations for one app at a time.
+    # See below for handling multiple apps
     app_name = 'my_app'
     # Or just the numbers, if you prefer brevity.
     before = '0001_initial'
     after = '0002_change_fields'
 
-    # Can have any name, is just a test method. MigrationTest
-    # subclasses django.test.TransactionTestCase
+    # Can have any name like test_*, is just a test method.
+    # MigrationTest subclasses django.test.TransactionTestCase
     def test_migration(self):
         # Load some data. Don't directly import models. At this point,
         # the database is at self.before, and the models have fields
@@ -57,6 +57,41 @@ class MyMigrationTest(MigrationTest):
         MyModel = self.get_model_after('MyModel')
 ```
 
+
+Reverse Migrations
+------------------
+
+You can test reverse migrations just like forward migrations. If you
+set `before = '0002'` and `after = '0001'` then when you call
+`self.run_migration()` in you test method it will run the reverse
+migration from `0002`.
+
+Alternatively, you can write a test where you run the migrations
+forward the backwards again. For example:
+
+```python
+
+from django_migration_testcase import MigrationTest
+
+
+class MyMigrationTest(MigrationTest):
+    app_name = 'my_app'
+    before = '0001'
+    after = '0002'
+
+    def test_migration(self):
+        # Set up some data...
+
+        # Run the migration forwards
+        self.run_migration()
+
+        # Check that the data looks right
+
+        # Run the migration back down again
+        self.run_reverse_migration()
+
+        # Check that the data has been put back as you expect.
+```
 
 Migrating Multiple Apps
 -----------------------
