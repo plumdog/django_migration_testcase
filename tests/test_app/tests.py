@@ -1,5 +1,10 @@
+import unittest
+
+import django
+from django.db import IntegrityError
+
 from django_migration_testcase import MigrationTest
-from django_migration_testcase.base import InvalidModelStateError
+from django_migration_testcase.base import InvalidModelStateError, idempotent_transaction
 
 
 class ExampleMigrationTest(MigrationTest):
@@ -223,3 +228,42 @@ class MigrateFromZero(MigrationTest):
 
         MyModel = self.get_model_after('MyModel')
         self.assertEqual(MyModel.__name__, 'MyModel')
+
+
+class TeardownCanFail(MigrationTest):
+    before = '0006'
+    after = '0007'
+
+    app_name = 'test_app'
+
+    def test_second_model_name_is_unique(self):
+        model_before = self.get_model_before('MySecondModel')
+        model_before.objects.create(name='foo')
+        model_before.objects.create(name='foo')
+        with self.assertRaises(IntegrityError):
+            self.run_migration()
+
+    def tearDown(self):
+        self.assertTrue(self.get_model_before('MySecondModel').objects.all().exists())
+        with self.assertRaises(IntegrityError):
+            # tearDown fails since migrations runs again with the data
+            super(TeardownCanFail, self).tearDown()
+
+        self.get_model_before('MySecondModel').objects.all().delete()
+        super(TeardownCanFail, self).tearDown()
+
+
+@unittest.skipIf(django.VERSION < (1, 7), 'Not supported by older django versions')
+class TeardownFailCanBeAvoidedWithIdempotentTransaction(MigrationTest):
+    before = '0006'
+    after = '0007'
+
+    app_name = 'test_app'
+
+    @idempotent_transaction
+    def test_second_model_name_is_unique(self):
+        model_before = self.get_model_before('MySecondModel')
+        model_before.objects.create(name='foo')
+        model_before.objects.create(name='foo')
+        with self.assertRaises(IntegrityError):
+            self.run_migration()

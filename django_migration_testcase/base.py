@@ -1,9 +1,29 @@
+import functools
+
+import django
+from django.db import transaction
 from django.test import TransactionTestCase
 from django.core.management import call_command
 
 
 class InvalidModelStateError(Exception):
     pass
+
+
+def idempotent_transaction(func):
+    if django.VERSION < (1, 7,):
+        return func
+    else:
+        @functools.wraps(func)
+        def func_wrapper(*args, **kwargs):
+            with transaction.atomic():
+                sp = transaction.savepoint()
+                try:
+                    func(*args, **kwargs)
+                    transaction.savepoint_rollback(sp)
+                except:
+                    raise
+        return func_wrapper
 
 
 class BaseMigrationTestCase(TransactionTestCase):

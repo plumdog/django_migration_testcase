@@ -162,6 +162,38 @@ default sets `verbosity=0` and `no_initial_data=True`. Extend this to
 pass more options/different options. Note that if you try to set a
 `fake` kwarg from this method, it will be ignored.
 
+Testing migration failures
+--------------------------
+
+Sometimes you want a migration to fail, and then fix the problem by hand (Ex: Resolve issues with unique together).
+
+To test this you will have to create a migration test provoking the problem. However if the data causing the migration error is not automatically cleaned up after the migration. The `tearDown`of `MigrationTest` will fail to migrate back the database in a good state and might create havoc in other tests. 
+
+For django 1.7+ the helpful `@idempotent_transaction` decorator is available to automatically revert data created during the test (on both success and failure). 
+
+```python
+from django_migration_testcase.base import idempotent_transaction
+
+@unittest.skipIf(django.VERSION < (1, 7), 'Not supported by older django versions')
+class TeardownFailCanBeAvoidedWithIdempotentTransaction(MigrationTest):
+    before = '0006'
+    after = '0007'
+
+    app_name = 'test_app'
+
+    @idempotent_transaction
+    def test_second_model_name_is_unique(self):
+        model_before = self.get_model_before('MySecondModel')
+        model_before.objects.create(name='foo')
+        model_before.objects.create(name='foo')
+        with self.assertRaises(IntegrityError):
+            self.run_migration()
+```
+
+For django <1.7 you will have to clean up the data by hand.
+
+For more information see issue [Issue #33](https://github.com/plumdog/django_migration_testcase/issues/33) the [Pull Request #35](https://github.com/plumdog/django_migration_testcase/pull/35).
+
 Tests
 -----
 

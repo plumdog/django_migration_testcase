@@ -10,3 +10,7 @@ class MyModel(models.Model):
 class ForeignModel(models.Model):
     name = models.CharField(max_length=100)
     my = models.ForeignKey(MyModel)
+
+
+class MySecondModel(models.Model):
+    name = models.CharField(max_length=100, unique=True)
