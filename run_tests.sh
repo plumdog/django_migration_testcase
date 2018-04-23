@@ -1,5 +1,20 @@
 #!/bin/bash
 
+if [[ -z $DB_HOST ]]; then
+    DB_HOST=localhost
+fi
+
+if [[ -z $DB_PORT ]]; then
+    DB_PORT=${POSTGRES_5432_TCP:-5432}
+fi
+
+function wait_for_port() {
+    while ! nc -z "$DB_HOST" "$DB_PORT"; do
+        sleep 1
+    done
+    sleep 5
+}
+
 SUCCESS=0
 
 DJANGO_VERSION=$("$VIRTUAL_ENV"/bin/django-admin.py --version)
@@ -12,9 +27,13 @@ else
     NAME='test_project_*_django'
 fi
 
-
 for f in $(find tests -type d -name "$NAME"); do
     echo "Tests for $f"
+    if [[ $f = *postgresql* ]]; then
+        echo "waiting"
+        wait_for_port
+    fi
+    echo "Running"
     if ! (cd "$f" && ./manage.py test test_app test_second_app) ; then
 	SUCCESS=1;
     fi

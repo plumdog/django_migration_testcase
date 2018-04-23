@@ -62,12 +62,14 @@ WSGI_APPLICATION = 'migration_test.wsgi.application'
 if bool(os.environ.get('TRAVIS', False)):
     DBUSER = 'postgres'
 else:
-    DBUSER = os.environ['USER']
+    DBUSER = os.environ.get('DB_USER', 'postgres')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'migration_test',
-        'USER': DBUSER
+        'USER': DBUSER,
+        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
+        'PORT': os.environ.get('POSTGRES_5432_TCP', '5432'),
     }
 }
 
