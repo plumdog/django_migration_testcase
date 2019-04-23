@@ -9,7 +9,7 @@ class MyModel(models.Model):
 
 class ForeignModel(models.Model):
     name = models.CharField(max_length=100)
-    my = models.ForeignKey(MyModel)
+    my = models.ForeignKey(MyModel, on_delete=models.CASCADE)
 
 
 class MySecondModel(models.Model):

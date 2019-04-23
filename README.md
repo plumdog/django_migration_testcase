@@ -153,14 +153,10 @@ The test method has a `migrate` method that takes an app name, a
 version and an optional `fake` boolean. By default, this just calls:
 ```python
 call_command('migrate', app_name, version,
-             fake=fake, verbosity=0, no_initial_data=True)
+             fake=fake, verbosity=0)
 ```
 
-If you need to alter your migrate command, you can either override
-this method, or you might just override `migrate_kwargs`, which by
-default sets `verbosity=0` and `no_initial_data=True`. Extend this to
-pass more options/different options. Note that if you try to set a
-`fake` kwarg from this method, it will be ignored.
+If you need to alter your migrate command, you can either override this method, or you might just override `migrate_kwargs`, which by default sets `verbosity=0`. Extend this to pass more options/different options. Note that if you try to set a `fake` kwarg from this method, it will be ignored.
 
 Testing migration failures
 --------------------------
@@ -169,7 +165,7 @@ Sometimes you want a migration to fail, and then fix the problem by hand (Ex: Re
 
 To test this you will have to create a migration test provoking the problem. However if the data causing the migration error is not automatically cleaned up after the migration. The `tearDown`of `MigrationTest` will fail to migrate back the database in a good state and might create havoc in other tests. 
 
-For django 1.7+ the helpful `@idempotent_transaction` decorator is available to automatically revert data created during the test (on both success and failure). 
+For django 1.7+ (with database engines other than sqlite3) the helpful `@idempotent_transaction` decorator is available to automatically revert data created during the test (on both success and failure). 
 
 ```python
 from django_migration_testcase.base import idempotent_transaction

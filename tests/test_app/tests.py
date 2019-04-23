@@ -2,6 +2,7 @@ import unittest
 
 import django
 from django.db import IntegrityError
+from django.conf import settings
 
 from django_migration_testcase import MigrationTest
 from django_migration_testcase.base import InvalidModelStateError, idempotent_transaction
@@ -174,7 +175,10 @@ class ForeignKeyTest(MigrationTest):
 
         # get_model_before/get_model_after seems to not get the same model as
         # this crazy thing.
-        MyModel = ForeignModel.my.field.rel.to
+        if django.VERSION >= (2, 0):
+            MyModel = ForeignModel.my.field.related_model
+        else:
+            MyModel = ForeignModel.my.field.rel.to
         self.assertEqual(MyModel.__name__, 'MyModel')
 
         my = MyModel(name='test_my', number=1, double_number=3.14)
@@ -190,7 +194,10 @@ class ForeignKeyTest(MigrationTest):
 
         # get_model_before/get_model_after seems to not get the same model as
         # this crazy thing.
-        MyModel = ForeignModel.my.field.rel.to
+        if django.VERSION >= (2, 0):
+            MyModel = ForeignModel.my.field.related_model
+        else:
+            MyModel = ForeignModel.my.field.rel.to
         MyModel2 = self.get_model_after('test_app.MyModel')
 
         self.assertEqual(MyModel, MyModel2)
@@ -254,6 +261,8 @@ class TeardownCanFail(MigrationTest):
 
 
 @unittest.skipIf(django.VERSION < (1, 7), 'Not supported by older django versions')
+@unittest.skipIf(django.VERSION >= (2, 0) and settings.DATABASES['default']['ENGINE'] == 'django.db.backends.sqlite3',
+                 'Not supported with django2 with sqlite3')
 class TeardownFailCanBeAvoidedWithIdempotentTransaction(MigrationTest):
     before = '0006'
     after = '0007'

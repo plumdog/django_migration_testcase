@@ -2,6 +2,7 @@ import functools
 
 import django
 from django.db import transaction
+from django.conf import settings
 from django.test import TransactionTestCase
 from django.core.management import call_command
 
@@ -11,7 +12,7 @@ class InvalidModelStateError(Exception):
 
 
 def idempotent_transaction(func):
-    if django.VERSION < (1, 7,):
+    if django.VERSION < (1, 7,) or django.VERSION >= (2, 0) and settings.DATABASES['default']['ENGINE'] == 'django.db.backends.sqlite3':
         return func
     else:
         @functools.wraps(func)
@@ -21,7 +22,7 @@ def idempotent_transaction(func):
                 try:
                     func(*args, **kwargs)
                     transaction.savepoint_rollback(sp)
-                except:
+                except BaseException:
                     raise
         return func_wrapper
 
@@ -74,9 +75,17 @@ class BaseMigrationTestCase(TransactionTestCase):
         raise NotImplementedError()
 
     def migrate_kwargs(self):
-        return {'verbosity': 0,
+        if django.VERSION >= (2, 0,):
+            return {
+                'verbosity': 0,
+                'interactive': False,
+            }
+        else:
+            return {
+                'verbosity': 0,
                 'no_initial_data': True,
-                'interactive': False}
+                'interactive': False,
+            }
 
     def migrate(self, app_name, version, fake=False):
         kwargs = self.migrate_kwargs()
